@@ -8,6 +8,9 @@ import android.view.Gravity.*
 import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
+import android.util.Log
+
+private const val TAG = "MainActivity"
 
 class MainActivity : AppCompatActivity() {
     private lateinit var trueButton: Button
@@ -28,6 +31,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d(TAG, "onCreate(Bundle?) called")
         setContentView(R.layout.activity_main)
         setTitle(R.string.app_name)
 
@@ -52,6 +56,31 @@ class MainActivity : AppCompatActivity() {
             updateQuestion(-1)
         }
         updateQuestion()
+    }
+
+    override fun onStart() {
+        Log.d(TAG, "onStart() called")
+        super.onStart()
+    }
+
+    override fun onResume() {
+        Log.d(TAG, "onResume() called")
+        super.onResume()
+    }
+
+    override fun onPause() {
+        Log.d(TAG, "onPause() called")
+        super.onPause()
+    }
+
+    override fun onStop() {
+        Log.d(TAG, "onStop() called")
+        super.onStop()
+    }
+
+    override fun onDestroy() {
+        Log.d(TAG, "onDestroy() called")
+        super.onDestroy()
     }
 
     private fun updateQuestion(indexChange: Int = 0) {
