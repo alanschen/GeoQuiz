@@ -1,6 +1,6 @@
 package com.example.geoquiz
 
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.widget.Button
 import android.widget.Toast
 import android.os.Bundle
@@ -9,7 +9,6 @@ import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
 import android.util.Log
-import org.w3c.dom.Text
 
 private const val TAG = "MainActivity"
 
@@ -39,9 +38,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate(Bundle?) called")
         setContentView(R.layout.activity_main)
-        setTitle(R.string.app_name)
 
         // Create View references
+        setTitle(R.string.app_name)
         trueButton = findViewById(R.id.true_button)
         falseButton = findViewById(R.id.false_button)
         nextButton = findViewById(R.id.next_button)
@@ -97,7 +96,7 @@ class MainActivity : AppCompatActivity() {
         scoreTextView.text = String.format("Score: %d/%d", score, questionBank.size)
     }
 
-    fun createAnswerToast(
+    private fun createAnswerToast(
         messageResId: Int,
         xOffSet: Int = 0,
         yOffset: Int = 0
