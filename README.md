@@ -1,4 +1,4 @@
-# GeoQuiz
+# GeoQuiz::kotlin
 The first Android project in Big Nerd Ranch Guide, 4th Edition. All bonus challenges completed!
 
 
