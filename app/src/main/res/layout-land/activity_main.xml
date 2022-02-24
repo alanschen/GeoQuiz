@@ -7,13 +7,31 @@
     android:layout_gravity="center_horizontal"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/question_text_view"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="30dp"
         android:layout_gravity="center_horizontal"
-        tools:text="@string/question_australia" />
+        android:orientation="vertical">   <!-- left to right -->
+
+
+        <TextView
+            android:id="@+id/score_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="30dp"
+            android:layout_gravity="center_horizontal"
+            android:textSize="30sp"
+            android:fontFamily="sans-serif-light"
+            tools:text="{your-score}" />
+
+        <TextView
+            android:id="@+id/question_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="30dp"
+            android:layout_gravity="center_horizontal"
+            tools:text="@string/question_australia" />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="wrap_content"

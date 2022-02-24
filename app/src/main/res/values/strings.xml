@@ -18,4 +18,5 @@
     <!-- toast strings -->
     <string name="correct_toast">Correct!</string>
     <string name="incorrect_toast">Incorrect!</string>
+    <string name="answered_toast">Question already answered!</string>
 </resources>

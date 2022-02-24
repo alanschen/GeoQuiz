@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
 import android.util.Log
+import org.w3c.dom.Text
 
 private const val TAG = "MainActivity"
 
@@ -18,6 +19,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var prevButton: ImageButton
     private lateinit var nextButton: ImageButton
     private lateinit var questionTextView: TextView
+    private lateinit var scoreTextView: TextView
 
     private val questionBank = listOf(
         Question(R.string.question_australia, true),
@@ -28,6 +30,10 @@ class MainActivity : AppCompatActivity() {
         Question(R.string.question_asia, true),
     )
     private var currentIndex = 0
+    // score and answered tracking
+    private var score = 0
+    private var answered = Array<Boolean>(questionBank.size) { _ -> false }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +47,7 @@ class MainActivity : AppCompatActivity() {
         nextButton = findViewById(R.id.next_button)
         prevButton = findViewById(R.id.prev_button)
         questionTextView = findViewById(R.id.question_text_view)
+        scoreTextView = findViewById(R.id.score_text_view)
 
         // Create buttons
         trueButton.setOnClickListener { view: View ->
@@ -87,21 +94,34 @@ class MainActivity : AppCompatActivity() {
         currentIndex = (currentIndex + questionBank.size + indexChange) % questionBank.size
         val questionTextResId = questionBank[currentIndex].textResId
         questionTextView.setText(questionTextResId) // you must pass by resId
+        scoreTextView.text = String.format("Score: %d/%d", score, questionBank.size)
+    }
+
+    fun createAnswerToast(
+        messageResId: Int,
+        xOffSet: Int = 0,
+        yOffset: Int = 0
+    ): Toast {
+        val toast: Toast = Toast.makeText(this, messageResId, Toast.LENGTH_SHORT)
+        toast.setGravity(TOP, xOffSet, yOffset)
+        return toast
     }
 
     private fun checkAnswer(userAnswer: Boolean) {
-        fun createAnswerToast(
-            messageResId: Int,
-            xOffSet: Int = 0,
-            yOffset: Int = 0
-        ): Toast {
-            val toast: Toast = Toast.makeText(this, messageResId, Toast.LENGTH_SHORT)
-            toast.setGravity(TOP, xOffSet, yOffset)
-            return toast
+        var messageResId = R.string.answered_toast
+        if (!answered[currentIndex]) {
+            if (questionBank[currentIndex].answer == userAnswer) {
+                messageResId = R.string.correct_toast
+                score += 1
+            } else {
+                messageResId = R.string.incorrect_toast
+            }
+            answered[currentIndex] = true
         }
-
-        val answerIsCorrect = questionBank[currentIndex].answer == userAnswer
-        val messageResId = if (answerIsCorrect) R.string.correct_toast else R.string.incorrect_toast
-        return createAnswerToast(messageResId, yOffset = 600).show()
+        updateQuestion()
+        return createAnswerToast(
+            messageResId,
+            yOffset = 600
+        ).show()
     }
 }
