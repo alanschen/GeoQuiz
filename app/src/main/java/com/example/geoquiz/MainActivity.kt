@@ -11,6 +11,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.appcompat.app.AppCompatActivity
 
 private const val TAG = "MainActivity"
+private const val CUR_INDEX_KEY = "curIndex"
+private const val CUR_SCORE_KEY = "curScore"
+private const val CUR_ANSWERED_KEY = "questionBank"
 
 class MainActivity : AppCompatActivity() {
     private lateinit var trueButton: Button
@@ -37,6 +40,16 @@ class MainActivity : AppCompatActivity() {
         val provider : ViewModelProvider = ViewModelProvider(this)
         val quizViewModel = provider.get(QuizViewModel::class.java)
         Log.d(TAG, "Got a QuizViewById: $quizViewModel")
+        // Update QuizModelView
+        val currentIndex : Int = savedInstanceState?.getInt(CUR_INDEX_KEY, 0) ?: 0
+        quizViewModel.currentIndex = currentIndex
+        val score : Int = savedInstanceState?.getInt(CUR_SCORE_KEY, 0) ?: 0
+        quizViewModel.score = score
+        val answeredList : BooleanArray = savedInstanceState?.getBooleanArray(
+            CUR_ANSWERED_KEY
+        ) ?: BooleanArray(questionBank.size)
+        quizViewModel.answeredList = answeredList
+        Log.d(TAG, "Restored score: %d, index: %d".format(score, currentIndex))
 
         // Create component View references
         setTitle(R.string.app_name)
@@ -78,6 +91,18 @@ class MainActivity : AppCompatActivity() {
         super.onPause()
     }
 
+    override fun onSaveInstanceState(savedInstanceState: Bundle) {
+        super.onSaveInstanceState(savedInstanceState)
+        Log.d(TAG, "onSaveInstanceState")
+        savedInstanceState.putInt(CUR_INDEX_KEY, quizViewModel.currentIndex)
+        savedInstanceState.putInt(CUR_SCORE_KEY, quizViewModel.score)
+        savedInstanceState.putBooleanArray(CUR_ANSWERED_KEY, quizViewModel.answeredList)
+        Log.d(TAG, "Saved score: %d, index: %d".format(
+            quizViewModel.score,
+            quizViewModel.currentIndex)
+        )
+    }
+
     override fun onStop() {
         Log.d(TAG, "onStop() called")
         super.onStop()
@@ -101,14 +126,14 @@ class MainActivity : AppCompatActivity() {
     private fun checkAnswer(userAnswer: Boolean) {
         var messageResId = R.string.answered_toast
         val curQuestion: Question = quizViewModel.curQuestion
-        if (!curQuestion.answered) {
+        if (!quizViewModel.curQuestionAnswered) {
             if (curQuestion.answer == userAnswer) {
                 messageResId = R.string.correct_toast
                 quizViewModel.score += 1
             } else {
                 messageResId = R.string.incorrect_toast
             }
-            curQuestion.answered = true
+            quizViewModel.markAnswered()
         }
         updateQuestion()
         return createAnswerToast(

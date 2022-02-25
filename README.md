@@ -11,5 +11,9 @@ The first Android project in Big Nerd Ranch Guide, 4th Edition. All bonus challe
     - Managing device orientation
     - Organizing orientation specific layout resources
     - Disable multiple answer and display score
+- Chapter 4: Persisting UI State
+    - Implemented `ViewModel` for main activity
+    - Fixed device orientation bug
+    - Added Saved Instance State to for durability
 
 Code and project sourced from Big Nerd Ranch Guide, see more in LICENSE.txt
