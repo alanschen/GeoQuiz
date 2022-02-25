@@ -1,14 +1,14 @@
 package com.example.geoquiz
-
-import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.Toast
-import android.os.Bundle
-import android.view.Gravity.*
-import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
-import android.util.Log
+import android.view.Gravity.*
+import android.view.View
+import androidx.lifecycle.ViewModelProvider
+import androidx.appcompat.app.AppCompatActivity
 
 private const val TAG = "MainActivity"
 
@@ -20,26 +20,25 @@ class MainActivity : AppCompatActivity() {
     private lateinit var questionTextView: TextView
     private lateinit var scoreTextView: TextView
 
-    private val questionBank = listOf(
-        Question(R.string.question_australia, true),
-        Question(R.string.question_oceans, true),
-        Question(R.string.question_africa, false),
-        Question(R.string.question_mideast, false),
-        Question(R.string.question_americas, true),
-        Question(R.string.question_asia, true),
-    )
-    private var currentIndex = 0
-    // score and answered tracking
-    private var score = 0
-    private var answered = Array<Boolean>(questionBank.size) { _ -> false }
+    private val quizViewModel: QuizViewModel by lazy {
+        ViewModelProvider(this).get(QuizViewModel::class.java)
+    }
 
+    private val questionBank: List<Question> by lazy {
+        quizViewModel.getQuestionBank()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate(Bundle?) called")
         setContentView(R.layout.activity_main)
 
-        // Create View references
+        // Set ViewModel: quizViewModel
+        val provider : ViewModelProvider = ViewModelProvider(this)
+        val quizViewModel = provider.get(QuizViewModel::class.java)
+        Log.d(TAG, "Got a QuizViewById: $quizViewModel")
+
+        // Create component View references
         setTitle(R.string.app_name)
         trueButton = findViewById(R.id.true_button)
         falseButton = findViewById(R.id.false_button)
@@ -89,11 +88,33 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
-    private fun updateQuestion(indexChange: Int = 0) {
-        currentIndex = (currentIndex + questionBank.size + indexChange) % questionBank.size
-        val questionTextResId = questionBank[currentIndex].textResId
-        questionTextView.setText(questionTextResId) // you must pass by resId
-        scoreTextView.text = String.format("Score: %d/%d", score, questionBank.size)
+    private fun updateQuestion(offset: Int = 0) {
+        quizViewModel.updateIndex(offset)
+        questionTextView.setText(quizViewModel.curQuestion.textResId)
+        scoreTextView.text = String.format(
+            "Score: %d/%d",
+            quizViewModel.score,
+            quizViewModel.bankSize
+        )
+    }
+
+    private fun checkAnswer(userAnswer: Boolean) {
+        var messageResId = R.string.answered_toast
+        val curQuestion: Question = quizViewModel.curQuestion
+        if (!curQuestion.answered) {
+            if (curQuestion.answer == userAnswer) {
+                messageResId = R.string.correct_toast
+                quizViewModel.score += 1
+            } else {
+                messageResId = R.string.incorrect_toast
+            }
+            curQuestion.answered = true
+        }
+        updateQuestion()
+        return createAnswerToast(
+            messageResId,
+            yOffset = 600
+        ).show()
     }
 
     private fun createAnswerToast(
@@ -104,23 +125,5 @@ class MainActivity : AppCompatActivity() {
         val toast: Toast = Toast.makeText(this, messageResId, Toast.LENGTH_SHORT)
         toast.setGravity(TOP, xOffSet, yOffset)
         return toast
-    }
-
-    private fun checkAnswer(userAnswer: Boolean) {
-        var messageResId = R.string.answered_toast
-        if (!answered[currentIndex]) {
-            if (questionBank[currentIndex].answer == userAnswer) {
-                messageResId = R.string.correct_toast
-                score += 1
-            } else {
-                messageResId = R.string.incorrect_toast
-            }
-            answered[currentIndex] = true
-        }
-        updateQuestion()
-        return createAnswerToast(
-            messageResId,
-            yOffset = 600
-        ).show()
     }
 }
