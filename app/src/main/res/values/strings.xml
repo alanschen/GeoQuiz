@@ -19,4 +19,9 @@
     <string name="correct_toast">Correct!</string>
     <string name="incorrect_toast">Incorrect!</string>
     <string name="answered_toast">Question already answered!</string>
+    <!-- cheating view strings -->
+    <string name="warning_text">Are you sure you want to cheat?</string>
+    <string name="show_answer_button">Show Answer</string>
+    <string name="cheat_button">CHEAT!</string>
+    <string name="judgement_toast">Cheating is wrong.</string>
 </resources>

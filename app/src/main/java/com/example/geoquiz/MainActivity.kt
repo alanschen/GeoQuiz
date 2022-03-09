@@ -1,14 +1,14 @@
 package com.example.geoquiz
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
+import android.view.View
 import android.widget.Button
-import android.widget.Toast
 import android.widget.ImageButton
 import android.widget.TextView
-import android.view.Gravity.*
-import android.view.View
-import androidx.lifecycle.ViewModelProvider
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 
 private const val TAG = "MainActivity"
 private const val CUR_INDEX_KEY = "curIndex"
@@ -138,7 +138,6 @@ class MainActivity : AppCompatActivity() {
         updateQuestion()
         return createAnswerToast(
             messageResId,
-            yOffset = 600
         ).show()
     }
 
@@ -148,7 +147,6 @@ class MainActivity : AppCompatActivity() {
         yOffset: Int = 0
     ): Toast {
         val toast: Toast = Toast.makeText(this, messageResId, Toast.LENGTH_SHORT)
-        toast.setGravity(TOP, xOffSet, yOffset)
         return toast
     }
 }
