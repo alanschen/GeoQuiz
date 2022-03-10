@@ -1,12 +1,12 @@
 package com.example.geoquiz
 import android.os.Bundle
 import android.util.Log
-import android.view.Gravity
 import android.view.View
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 
@@ -20,6 +20,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var falseButton: Button
     private lateinit var prevButton: ImageButton
     private lateinit var nextButton: ImageButton
+    private lateinit var cheatButton: Button
     private lateinit var questionTextView: TextView
     private lateinit var scoreTextView: TextView
 
@@ -57,10 +58,20 @@ class MainActivity : AppCompatActivity() {
         falseButton = findViewById(R.id.false_button)
         nextButton = findViewById(R.id.next_button)
         prevButton = findViewById(R.id.prev_button)
+        cheatButton = findViewById(R.id.cheat_button)
         questionTextView = findViewById(R.id.question_text_view)
         scoreTextView = findViewById(R.id.score_text_view)
 
         // Create buttons
+        cheatButton.setOnClickListener {
+            val answerIsTrue = quizViewModel.curQuestion.answer
+            val cheatIntent = CheatActivity.newIntent(
+                this@MainActivity,
+                answerIsTrue
+            )
+            startActivity(cheatIntent)
+        }
+
         trueButton.setOnClickListener { view: View ->
             checkAnswer(true)
         }

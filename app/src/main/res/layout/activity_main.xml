@@ -17,6 +17,14 @@
         android:fontFamily="sans-serif-light"
         tools:text="{your-score}" />
 
+    <Button
+        android:id="@+id/cheat_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:text="@string/cheat_button" />
+
     <TextView
         android:id="@+id/question_text_view"
         android:layout_width="wrap_content"
