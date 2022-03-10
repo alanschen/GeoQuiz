@@ -18,6 +18,7 @@ class QuizViewModel : ViewModel() {
     var currentIndex = 0
     var score = 0
     var answeredList: BooleanArray = BooleanArray(bankSize)
+    var isCheater = false
 
     val curQuestion: Question
         get() = questionBank[currentIndex]

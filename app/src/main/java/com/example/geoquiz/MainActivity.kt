@@ -1,4 +1,5 @@
 package com.example.geoquiz
+import android.app.Activity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -7,6 +8,8 @@ import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import android.content.Intent
+import android.graphics.Color
+import androidx.activity.result.ActivityResult
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 
@@ -14,6 +17,10 @@ private const val TAG = "MainActivity"
 private const val CUR_INDEX_KEY = "curIndex"
 private const val CUR_SCORE_KEY = "curScore"
 private const val CUR_ANSWERED_KEY = "questionBank"
+// cheat activity data
+private const val REQUEST_CODE_CHEAT = 0
+private const val EXTRA_ANSWER_SHOWN =
+    "com.bignerdranch.android.geoquiz.answer_shown"
 
 class MainActivity : AppCompatActivity() {
     private lateinit var trueButton: Button
@@ -69,7 +76,7 @@ class MainActivity : AppCompatActivity() {
                 this@MainActivity,
                 answerIsTrue
             )
-            startActivity(cheatIntent)
+            startActivityForResult(cheatIntent, REQUEST_CODE_CHEAT)
         }
 
         trueButton.setOnClickListener { view: View ->
@@ -79,12 +86,32 @@ class MainActivity : AppCompatActivity() {
             checkAnswer(false)
         }
         nextButton.setOnClickListener { view : View ->
-            updateQuestion(1)
+            updateQuestionText(1)
         }
         prevButton.setOnClickListener { view : View ->
-            updateQuestion(-1)
+            updateQuestionText(-1)
         }
-        updateQuestion()
+        updateQuestionText()
+        updateScoreText()
+    }
+
+    override fun onActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?
+    ) {
+        super.onActivityResult(requestCode, resultCode, data)
+        // Default RESULT OKAY
+        if (resultCode != Activity.RESULT_OK) {
+            return
+        }
+        if (requestCode == REQUEST_CODE_CHEAT) {
+            quizViewModel.isCheater =
+                data?.getBooleanExtra(EXTRA_ANSWER_SHOWN, false) ?: false
+            scoreTextView.setText(R.string.judgement_toast)
+            Log.d(TAG, "Setting TextColor")
+            scoreTextView.setTextColor(Color.parseColor("#ffff0000"))
+        }
     }
 
     override fun onStart() {
@@ -124,9 +151,15 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
-    private fun updateQuestion(offset: Int = 0) {
+    private fun updateQuestionText(offset: Int = 0) {
         quizViewModel.updateIndex(offset)
         questionTextView.setText(quizViewModel.curQuestion.textResId)
+    }
+
+    private fun updateScoreText() {
+        if (quizViewModel.isCheater) {
+            return
+        }
         scoreTextView.text = String.format(
             "Score: %d/%d",
             quizViewModel.score,
@@ -137,22 +170,27 @@ class MainActivity : AppCompatActivity() {
     private fun checkAnswer(userAnswer: Boolean) {
         var messageResId = R.string.answered_toast
         val curQuestion: Question = quizViewModel.curQuestion
-        if (!quizViewModel.curQuestionAnswered) {
-            if (curQuestion.answer == userAnswer) {
-                messageResId = R.string.correct_toast
-                quizViewModel.score += 1
-            } else {
-                messageResId = R.string.incorrect_toast
+        if (quizViewModel.isCheater) {
+            messageResId = R.string.judgement_toast
+        } else {
+            if (!quizViewModel.curQuestionAnswered) {
+                if (curQuestion.answer == userAnswer) {
+                    messageResId = R.string.correct_toast
+                    quizViewModel.score += 1
+                } else {
+                    messageResId = R.string.incorrect_toast
+                }
+                quizViewModel.markAnswered()
             }
-            quizViewModel.markAnswered()
         }
-        updateQuestion()
-        return createAnswerToast(
+        updateQuestionText()
+        updateScoreText()
+        return createToast(
             messageResId,
         ).show()
     }
 
-    private fun createAnswerToast(
+    private fun createToast(
         messageResId: Int,
         xOffSet: Int = 0,
         yOffset: Int = 0

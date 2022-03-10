@@ -1,5 +1,6 @@
 package com.example.geoquiz
 
+import android.app.Activity
 import androidx.appcompat.app.AppCompatActivity
 import android.content.Intent
 import android.content.Context
@@ -9,6 +10,8 @@ import android.widget.TextView
 
 private const val EXTRA_ANSWER_IS_TRUE =
     "com.bignerdranch.android.geoquiz.answer_is_true"
+private const val EXTRA_ANSWER_SHOWN =
+    "com.bignerdranch.android.geoquiz.answer_shown"
 
 class CheatActivity : AppCompatActivity() {
     private lateinit var answerTextView: TextView
@@ -30,7 +33,15 @@ class CheatActivity : AppCompatActivity() {
                 else -> R.string.false_button
             }
             answerTextView.setText(answerText)
+            setAnswerShownResult(true)
         }
+    }
+
+    private fun setAnswerShownResult(isAnswerShown: Boolean) {
+        val data: Intent = Intent().apply {
+            putExtra(EXTRA_ANSWER_SHOWN, isAnswerShown)
+        }
+        setResult(Activity.RESULT_OK, data)
     }
 
     companion object {
